@@ -1,10 +1,11 @@
 package com.appdeveloperblog.photoapp.api.users.ui.controllers;
 
+import com.appdeveloperblog.photoapp.api.users.ui.model.CreateUserRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -14,7 +15,12 @@ public class UsersRestController {
     private Environment environment;
 
     @GetMapping("/status/check")
-    public  String status() {
+    public String status() {
         return "Working port:" + environment.getProperty("local.server.port");
+    }
+
+    @PostMapping()
+    public String createUser(@Valid @RequestBody CreateUserRequestModel createUserRequestModel) {
+        return "Create user method";
     }
 }

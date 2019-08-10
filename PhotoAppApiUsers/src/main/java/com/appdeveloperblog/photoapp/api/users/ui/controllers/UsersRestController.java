@@ -3,6 +3,7 @@ package com.appdeveloperblog.photoapp.api.users.ui.controllers;
 import com.appdeveloperblog.photoapp.api.users.service.UserService;
 import com.appdeveloperblog.photoapp.api.users.shared.UserDTO;
 import com.appdeveloperblog.photoapp.api.users.ui.model.CreateUserRequestModel;
+import com.appdeveloperblog.photoapp.api.users.ui.model.CreateUserResponseModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,13 @@ public class UsersRestController {
     }
 
     @PostMapping()
-    public ResponseEntity createUser(@Valid @RequestBody CreateUserRequestModel createUserRequestModel) {
+    public ResponseEntity<CreateUserResponseModel> createUser(@Valid @RequestBody CreateUserRequestModel createUserRequestModel) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserDTO userDto = modelMapper.map(createUserRequestModel, UserDTO.class);
-        userService.createUser(userDto);
-        return new ResponseEntity(HttpStatus.CREATED);
+        UserDTO createdUSer = userService.createUser(userDto);
+        CreateUserResponseModel response = modelMapper.map(createdUSer, CreateUserResponseModel.class);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

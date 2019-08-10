@@ -1,8 +1,14 @@
 package com.appdeveloperblog.photoapp.api.users.ui.controllers;
 
+import com.appdeveloperblog.photoapp.api.users.service.UserService;
+import com.appdeveloperblog.photoapp.api.users.shared.UserDTO;
 import com.appdeveloperblog.photoapp.api.users.ui.model.CreateUserRequestModel;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -11,8 +17,14 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class UsersRestController {
 
+    private final Environment environment;
+    private final UserService userService;
+
     @Autowired
-    private Environment environment;
+    public UsersRestController(final Environment environment, UserService userService) {
+        this.environment = environment;
+        this.userService = userService;
+    }
 
     @GetMapping("/status/check")
     public String status() {
@@ -20,7 +32,11 @@ public class UsersRestController {
     }
 
     @PostMapping()
-    public String createUser(@Valid @RequestBody CreateUserRequestModel createUserRequestModel) {
-        return "Create user method";
+    public ResponseEntity createUser(@Valid @RequestBody CreateUserRequestModel createUserRequestModel) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        UserDTO userDto = modelMapper.map(createUserRequestModel, UserDTO.class);
+        userService.createUser(userDto);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 }
